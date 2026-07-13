@@ -51,6 +51,15 @@ git clone https://github.com/wooihaw/mlpy2607.git
 cd mlpy2607
 ```
 
+#### Don't have git installed?
+
+If you do not have `git` installed, you can download the repository as a ZIP file instead:
+
+1. Open https://github.com/wooihaw/mlpy2607 in your web browser.
+2. Click the green **Code** button, then select **Download ZIP**.
+3. Extract the downloaded ZIP file to a folder of your choice.
+4. Open a terminal in the extracted `mlpy2607` folder before continuing with the next step.
+
 ### 3. Restore the dependencies
 
 Run the following command to restore the dependencies:
