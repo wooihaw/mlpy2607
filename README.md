@@ -76,6 +76,22 @@ Run the following command to launch Jupyter Lab:
 uv run jupyter-lab
 ```
 
+## Notebook Descriptions
+| Filename | Description |
+| --- | --- |
+| [Getting_started.ipynb](Getting_started.ipynb) | Verify that the development environment is set up correctly by walking through the 6 stages of a machine learning workflow (predicting gender from height and weight). |
+| [Python_libraries.ipynb](Python_libraries.ipynb) | Introduction to JupyterLab and a quick refresher on the core Python libraries used throughout the workshop. |
+| [index.ipynb](index.ipynb) | In-notebook index of all the `ml*.py` example scripts with their descriptions. |
+| [day1.ipynb](day1.ipynb) | Working notebook for running and experimenting with the Day 1 examples. |
+| [day2.ipynb](day2.ipynb) | Working notebook for running and experimenting with the Day 2 examples. |
+| [day3.ipynb](day3.ipynb) | Working notebook for running and experimenting with the Day 3 examples. |
+| [exercise1.ipynb](exercise1.ipynb) | Exercise on encoding categorical data and imputing missing values (income dataset). |
+| [exercise2.ipynb](exercise2.ipynb) | Exercise on the importance of feature scaling for distance-based algorithms such as k-NN. |
+| [exercise3.ipynb](exercise3.ipynb) | Exercise building a machine learning model to predict Titanic passenger survival. |
+| [handson/handson_1.ipynb](handson/handson_1.ipynb) | Hands-on classification of penguin species using the Palmer Penguin dataset. |
+| [handson/handson_2.ipynb](handson/handson_2.ipynb) | Hands-on clustering to group truck drivers, using the Elbow method and silhouette score to choose the number of clusters. |
+| [handson/handson_3.ipynb](handson/handson_3.ipynb) | Hands-on face recognition on the Olivetti faces dataset with PCA dimensionality reduction and a tuned classification pipeline. |
+
 ## Python Script Descriptions
 | Filename | Description |
 | --- | --- |
