@@ -1,0 +1,94 @@
+name: Collect repository traffic
+
+# Refreshes docs/traffic.json with clone + release-download stats so the
+# GitHub Pages site can show a live "course reach" infographic.
+#
+# GitHub's traffic API only keeps the last 14 days, so this workflow MERGES
+# each run into a per-day time series and keeps a growing cumulative total.
+# Run it at least once every 14 days (the daily schedule below is plenty).
+#
+# SETUP (one time):
+#   1. Create a Personal Access Token that can read this repo's traffic:
+#        - Classic token: scope `repo`.
+#        - Fine-grained token: this repository + "Administration: Read-only".
+#   2. Add it as a repo secret named TRAFFIC_TOKEN
+#        (Settings > Secrets and variables > Actions > New repository secret).
+#   The default GITHUB_TOKEN cannot read the traffic API, which is why a PAT is needed.
+
+on:
+  schedule:
+    - cron: "17 3 * * *"   # daily at 03:17 UTC
+  workflow_dispatch: {}      # allow manual runs
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.TRAFFIC_TOKEN }}
+
+      - name: Fetch traffic and update docs/traffic.json
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.TRAFFIC_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = 'docs/traffic.json';
+            const { owner, repo } = context.repo;
+
+            // --- load existing data (if any) ---
+            let existing = { clones: {}, downloads: {}, timeseries: [] };
+            try { existing = JSON.parse(fs.readFileSync(path, 'utf8')); } catch (e) {}
+            const byDate = new Map();
+            for (const p of (existing.timeseries || [])) {
+              byDate.set(p.date, { clones: p.clones || 0, uniques: p.uniques || 0 });
+            }
+
+            // --- clones (last 14 days), merged by date ---
+            const clones = await github.rest.repos.getClones({ owner, repo, per: 'day' });
+            for (const d of clones.data.clones) {
+              const date = d.timestamp.slice(0, 10);
+              byDate.set(date, { clones: d.count, uniques: d.uniques });
+            }
+
+            // --- rebuild sorted series + cumulative totals ---
+            const timeseries = [...byDate.entries()]
+              .map(([date, v]) => ({ date, clones: v.clones, uniques: v.uniques }))
+              .sort((a, b) => a.date.localeCompare(b.date));
+            const totalClones = timeseries.reduce((s, p) => s + p.clones, 0);
+            const totalUniques = timeseries.reduce((s, p) => s + p.uniques, 0);
+
+            // --- release asset downloads (public, cumulative) ---
+            let releaseDownloads = 0;
+            try {
+              const releases = await github.paginate(github.rest.repos.listReleases, { owner, repo, per_page: 100 });
+              for (const rel of releases) {
+                for (const asset of (rel.assets || [])) releaseDownloads += asset.download_count || 0;
+              }
+            } catch (e) { core.warning('Could not read releases: ' + e.message); }
+
+            const out = {
+              updated: new Date().toISOString().slice(0, 10),
+              clones: { total: totalClones, uniques: totalUniques },
+              downloads: { releases_total: releaseDownloads },
+              timeseries
+            };
+            fs.writeFileSync(path, JSON.stringify(out, null, 2) + '\n');
+            core.info(`clones=${totalClones} uniques=${totalUniques} downloads=${releaseDownloads} days=${timeseries.length}`);
+
+      - name: Commit changes
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/traffic.json
+          if git diff --cached --quiet; then
+            echo "No traffic changes to commit."
+          else
+            git commit -m "chore: update repository traffic data [skip ci]"
+            git push
+          fi

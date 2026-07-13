@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Machine Learning with Python — Training Course</title>
+<meta name="description" content="A hands-on training course that takes you from raw data to trained machine learning models using Python and scikit-learn." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0b1020;
+    --bg-soft: #121a33;
+    --card: #16203f;
+    --card-2: #1b2748;
+    --border: #263357;
+    --text: #e8ecf8;
+    --muted: #9aa6c8;
+    --accent: #6ee7ff;
+    --accent-2: #a78bfa;
+    --accent-3: #f472b6;
+    --grad: linear-gradient(120deg, #6ee7ff 0%, #a78bfa 50%, #f472b6 100%);
+    --shadow: 0 20px 45px rgba(0,0,0,0.45);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: radial-gradient(1200px 700px at 80% -10%, #1a2547 0%, transparent 60%),
+                radial-gradient(1000px 600px at -10% 20%, #241a47 0%, transparent 55%),
+                var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 22px; }
+  code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(12px);
+    background: rgba(11,16,32,0.72);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 62px; }
+  .brand { font-weight: 800; letter-spacing: 0.2px; display: flex; align-items: center; gap: 10px; }
+  .brand .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--grad); box-shadow: 0 0 14px #a78bfa; }
+  .nav-links { display: flex; gap: 22px; font-size: 0.92rem; }
+  .nav-links a { color: var(--muted); font-weight: 500; }
+  .nav-links a:hover { color: var(--text); }
+  @media (max-width: 720px){ .nav-links { display: none; } }
+
+  /* Hero */
+  header.hero { padding: 92px 0 60px; text-align: center; position: relative; overflow: hidden; }
+  .badge-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.8rem; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 6px 14px; margin-bottom: 22px; background: rgba(255,255,255,0.02);
+  }
+  .badge-pill .live { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 10px #34d399; }
+  h1 {
+    font-size: clamp(2.3rem, 6vw, 4rem);
+    line-height: 1.05; margin: 0 0 18px; font-weight: 800; letter-spacing: -1px;
+  }
+  h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { font-size: clamp(1.02rem, 2.2vw, 1.25rem); color: var(--muted); max-width: 660px; margin: 0 auto 30px; }
+  .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 13px 24px; border-radius: 12px; font-weight: 600; font-size: 0.98rem;
+    border: 1px solid transparent; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: var(--grad); color: #0b1020; box-shadow: 0 12px 30px rgba(110,231,255,0.25); }
+  .btn-ghost { background: transparent; border-color: var(--border); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--accent-2); }
+
+  /* Sections */
+  section { padding: 62px 0; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 2px; font-size: 0.76rem; color: var(--accent-2); font-weight: 700; margin-bottom: 10px; }
+  h2 { font-size: clamp(1.6rem, 3.6vw, 2.3rem); margin: 0 0 14px; font-weight: 700; letter-spacing: -0.5px; }
+  .section-lede { color: var(--muted); max-width: 640px; margin-bottom: 34px; }
+
+  /* Stats strip */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  @media (max-width: 720px){ .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat {
+    background: linear-gradient(160deg, var(--card), var(--card-2));
+    border: 1px solid var(--border); border-radius: 16px; padding: 22px; text-align: center;
+  }
+  .stat .num { font-size: 2.3rem; font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat .lbl { color: var(--muted); font-size: 0.86rem; margin-top: 4px; }
+
+  /* Cards grid */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 860px){ .grid-3 { grid-template-columns: 1fr; } }
+  .card {
+    background: linear-gradient(160deg, var(--card), var(--card-2));
+    border: 1px solid var(--border); border-radius: 18px; padding: 26px;
+    box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+  .card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--grad); opacity: .8; }
+  .card h3 { margin: 6px 0 8px; font-size: 1.2rem; }
+  .card .day-tag { font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .card ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); font-size: 0.92rem; }
+  .card ul li { margin-bottom: 5px; }
+
+  /* Workflow diagram */
+  .flow { width: 100%; height: auto; }
+  .two-col { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 30px; align-items: center; }
+  @media (max-width: 860px){ .two-col { grid-template-columns: 1fr; } }
+
+  .chart-card { background: linear-gradient(160deg, var(--card), var(--card-2)); border: 1px solid var(--border); border-radius: 18px; padding: 24px; box-shadow: var(--shadow); }
+  .chart-wrap { position: relative; height: 320px; }
+
+  /* Traffic infographic */
+  .traffic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 22px; }
+  @media (max-width: 720px){ .traffic-grid { grid-template-columns: 1fr; } }
+  .metric {
+    background: linear-gradient(160deg, var(--card), var(--card-2));
+    border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-align: left; position: relative;
+  }
+  .metric .ico { font-size: 1.4rem; }
+  .metric .big { font-size: 2.5rem; font-weight: 800; line-height: 1; margin: 10px 0 4px; }
+  .metric .cap { color: var(--muted); font-size: 0.86rem; }
+  .metric .sub { color: var(--accent); font-size: 0.78rem; margin-top: 8px; }
+  .updated { color: var(--muted); font-size: 0.8rem; margin-top: 6px; }
+  .note { font-size: 0.82rem; color: var(--muted); background: rgba(167,139,250,0.08); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-top: 18px; }
+
+  /* Notebook list */
+  .nb-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media (max-width: 720px){ .nb-list { grid-template-columns: 1fr; } }
+  .nb {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+  }
+  .nb .k { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent); white-space: nowrap; }
+  .nb .d { color: var(--muted); font-size: 0.86rem; }
+
+  /* Quickstart */
+  .terminal { background: #0a0f1f; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+  .terminal .bar { display: flex; gap: 7px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .terminal .bar span { width: 12px; height: 12px; border-radius: 50%; }
+  .terminal .bar .r{background:#ff5f56}.terminal .bar .y{background:#ffbd2e}.terminal .bar .g{background:#27c93f}
+  .terminal pre { margin: 0; padding: 18px 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; line-height: 1.7; }
+  .terminal .cmt { color: #6b7aa8; }
+  .terminal .cmd { color: #7ef0c8; }
+
+  footer { border-top: 1px solid var(--border); padding: 40px 0; color: var(--muted); font-size: 0.9rem; text-align: center; }
+  footer a { color: var(--muted); } footer a:hover { color: var(--text); }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> ML&nbsp;with&nbsp;Python</div>
+    <div class="nav-links">
+      <a href="#about">Overview</a>
+      <a href="#curriculum">Curriculum</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#topics">Topics</a>
+      <a href="#traffic">Reach</a>
+      <a href="#start">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="badge-pill"><span class="live"></span> Hands-on · Python · scikit-learn</div>
+    <h1>Machine Learning<br><span class="grad">with Python</span></h1>
+    <p class="lede">A practical, project-based training course that takes you from raw data all the way to trained, tuned machine learning models — one runnable example at a time.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/wooihaw/mlpy2607" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="#0b1020"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View on GitHub
+      </a>
+      <a class="btn btn-ghost" href="#start">Get Started →</a>
+    </div>
+  </div>
+</header>
+
+<section id="about" style="padding-top: 20px;">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><div class="num" data-count="40">0</div><div class="lbl">Example scripts</div></div>
+      <div class="stat"><div class="num" data-count="12">0</div><div class="lbl">Notebooks</div></div>
+      <div class="stat"><div class="num" data-count="16">0</div><div class="lbl">Datasets</div></div>
+      <div class="stat"><div class="num" data-count="3">0</div><div class="lbl">Days of training</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="curriculum">
+  <div class="wrap">
+    <div class="eyebrow">What you'll cover</div>
+    <h2>A three-day journey through the ML pipeline</h2>
+    <p class="section-lede">The course is organised so each stage builds on the last — from preparing messy data, to training models, to tuning them for real performance.</p>
+    <div class="grid-3">
+      <div class="card">
+        <div class="day-tag">Day 1</div>
+        <h3>Data &amp; Foundations</h3>
+        <ul>
+          <li>Python &amp; JupyterLab refresher</li>
+          <li>Loading &amp; exploring datasets (EDA)</li>
+          <li>Cleaning, missing values &amp; outliers</li>
+          <li>Encoding, scaling &amp; feature engineering</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="day-tag">Day 2</div>
+        <h3>Models &amp; Evaluation</h3>
+        <ul>
+          <li>Feature selection techniques</li>
+          <li>Train/test split &amp; cross-validation</li>
+          <li>Regression &amp; classification algorithms</li>
+          <li>Ensembles &amp; neural networks</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="day-tag">Day 3</div>
+        <h3>Tuning &amp; Unsupervised</h3>
+        <ul>
+          <li>Hyperparameter tuning &amp; pipelines</li>
+          <li>K-Means &amp; Gaussian Mixture clustering</li>
+          <li>PCA &amp; dimensionality reduction</li>
+          <li>Capstone hands-on projects</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="workflow">
+  <div class="wrap">
+    <div class="eyebrow">The mental model</div>
+    <h2>Every project follows six stages</h2>
+    <p class="section-lede">From the very first notebook, you'll practise the same end-to-end machine learning workflow used in real projects.</p>
+    <div class="chart-card">
+      <svg class="flow" viewBox="0 0 1000 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Six-stage machine learning workflow">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#6ee7ff"/><stop offset="0.5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/>
+          </linearGradient>
+        </defs>
+        <!-- connecting line -->
+        <line x1="70" y1="105" x2="930" y2="105" stroke="url(#g)" stroke-width="3" opacity="0.5"/>
+        <g font-family="Inter, sans-serif" text-anchor="middle">
+          <!-- stage template repeated -->
+          <g>
+            <circle cx="70" cy="105" r="30" fill="#16203f" stroke="url(#g)" stroke-width="2.5"/>
+            <text x="70" y="112" fill="#6ee7ff" font-size="22" font-weight="700">1</text>
+            <text x="70" y="168" fill="#e8ecf8" font-size="14" font-weight="600">Problem</text>
+            <text x="70" y="186" fill="#9aa6c8" font-size="11">statement</text>
+          </g>
+          <g>
+            <circle cx="242" cy="105" r="30" fill="#16203f" stroke="url(#g)" stroke-width="2.5"/>
+            <text x="242" y="112" fill="#6ee7ff" font-size="22" font-weight="700">2</text>
+            <text x="242" y="168" fill="#e8ecf8" font-size="14" font-weight="600">Data</text>
+            <text x="242" y="186" fill="#9aa6c8" font-size="11">collection</text>
+          </g>
+          <g>
+            <circle cx="414" cy="105" r="30" fill="#16203f" stroke="url(#g)" stroke-width="2.5"/>
+            <text x="414" y="112" fill="#6ee7ff" font-size="22" font-weight="700">3</text>
+            <text x="414" y="168" fill="#e8ecf8" font-size="14" font-weight="600">Preparation</text>
+            <text x="414" y="186" fill="#9aa6c8" font-size="11">&amp; cleaning</text>
+          </g>
+          <g>
+            <circle cx="586" cy="105" r="30" fill="#16203f" stroke="url(#g)" stroke-width="2.5"/>
+            <text x="586" y="112" fill="#6ee7ff" font-size="22" font-weight="700">4</text>
+            <text x="586" y="168" fill="#e8ecf8" font-size="14" font-weight="600">Modelling</text>
+            <text x="586" y="186" fill="#9aa6c8" font-size="11">&amp; training</text>
+          </g>
+          <g>
+            <circle cx="758" cy="105" r="30" fill="#16203f" stroke="url(#g)" stroke-width="2.5"/>
+            <text x="758" y="112" fill="#6ee7ff" font-size="22" font-weight="700">5</text>
+            <text x="758" y="168" fill="#e8ecf8" font-size="14" font-weight="600">Evaluation</text>
+            <text x="758" y="186" fill="#9aa6c8" font-size="11">&amp; tuning</text>
+          </g>
+          <g>
+            <circle cx="930" cy="105" r="30" fill="#16203f" stroke="url(#g)" stroke-width="2.5"/>
+            <text x="930" y="112" fill="#6ee7ff" font-size="22" font-weight="700">6</text>
+            <text x="930" y="168" fill="#e8ecf8" font-size="14" font-weight="600">Deployment</text>
+            <text x="930" y="186" fill="#9aa6c8" font-size="11">&amp; use</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section id="topics">
+  <div class="wrap">
+    <div class="eyebrow">40 runnable examples</div>
+    <h2>What's inside the toolkit</h2>
+    <p class="section-lede">Each example script (<span class="mono">ml01.py</span> → <span class="mono">ml40.py</span>) is a self-contained lesson. Here's how they're distributed across the ML pipeline.</p>
+    <div class="two-col">
+      <div class="chart-card">
+        <div class="chart-wrap"><canvas id="topicChart"></canvas></div>
+      </div>
+      <div>
+        <div class="chart-card">
+          <div class="chart-wrap"><canvas id="stageChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="traffic">
+  <div class="wrap">
+    <div class="eyebrow">Course reach</div>
+    <h2>How many people are using this repository</h2>
+    <p class="section-lede">These figures are refreshed automatically by a scheduled GitHub Action that reads the repository's traffic statistics.</p>
+
+    <div class="traffic-grid">
+      <div class="metric">
+        <div class="ico">📥</div>
+        <div class="big" id="m-clones">—</div>
+        <div class="cap">Total git clones</div>
+        <div class="sub" id="m-clones-u">&nbsp;</div>
+      </div>
+      <div class="metric">
+        <div class="ico">👤</div>
+        <div class="big" id="m-uniques">—</div>
+        <div class="cap">Unique cloners</div>
+        <div class="sub">across the tracked period</div>
+      </div>
+      <div class="metric">
+        <div class="ico">⬇️</div>
+        <div class="big" id="m-downloads">—</div>
+        <div class="cap">Release downloads</div>
+        <div class="sub">ZIP &amp; asset downloads</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-wrap" style="height:280px;"><canvas id="trafficChart"></canvas></div>
+      <div class="updated" id="m-updated"></div>
+    </div>
+    <div class="note" id="traffic-note">
+      Loading live traffic data… If numbers stay empty, the collection workflow hasn't run yet — see the setup steps in the repository README.
+    </div>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <div class="eyebrow">Get started in minutes</div>
+    <h2>Clone, sync, and launch</h2>
+    <p class="section-lede">The project uses <span class="mono">uv</span> for fast, reproducible environments. No git? Download the ZIP from GitHub and skip step&nbsp;1.</p>
+    <div class="terminal">
+      <div class="bar"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+      <pre><span class="cmt"># 1 · get the code</span>
+<span class="cmd">git clone https://github.com/wooihaw/mlpy2607.git</span>
+<span class="cmd">cd mlpy2607</span>
+
+<span class="cmt"># 2 · restore the exact dependencies</span>
+<span class="cmd">uv sync</span>
+
+<span class="cmt"># 3 · launch JupyterLab and start learning</span>
+<span class="cmd">uv run jupyter-lab</span></pre>
+    </div>
+    <div style="margin-top:26px;">
+      <div class="eyebrow">Notebooks at a glance</div>
+      <div class="nb-list">
+        <div class="nb"><span class="k">Getting_started</span><span class="d">Verify your setup across the 6-stage ML workflow.</span></div>
+        <div class="nb"><span class="k">Python_libraries</span><span class="d">JupyterLab tour &amp; core library refresher.</span></div>
+        <div class="nb"><span class="k">day1–3</span><span class="d">Working notebooks for each day's live examples.</span></div>
+        <div class="nb"><span class="k">exercise1–3</span><span class="d">Encoding &amp; imputation, feature scaling, Titanic survival.</span></div>
+        <div class="nb"><span class="k">handson_1</span><span class="d">Classify penguin species (Palmer Penguins).</span></div>
+        <div class="nb"><span class="k">handson_2</span><span class="d">Cluster truck drivers with K-Means &amp; silhouette.</span></div>
+        <div class="nb"><span class="k">handson_3</span><span class="d">Face recognition with PCA + tuned pipeline.</span></div>
+        <div class="nb"><span class="k">index</span><span class="d">In-repo index of all 40 example scripts.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Machine Learning with Python</strong> — training course materials.<br>
+    <a href="https://github.com/wooihaw/mlpy2607" target="_blank" rel="noopener">github.com/wooihaw/mlpy2607</a> · Licensed under the repository's LICENSE.</p>
+  </div>
+</footer>
+
+<script>
+  // ---- animated stat counters ----
+  const counters = document.querySelectorAll('.stat .num[data-count]');
+  const animate = (el) => {
+    const target = +el.dataset.count; let cur = 0;
+    const step = Math.max(1, Math.round(target / 40));
+    const t = setInterval(() => { cur += step; if (cur >= target){ cur = target; clearInterval(t); } el.textContent = cur; }, 25);
+  };
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ animate(e.target); io.unobserve(e.target); } });
+  }, { threshold: 0.5 });
+  counters.forEach(c => io.observe(c));
+
+  // ---- Chart.js global styling ----
+  Chart.defaults.color = '#9aa6c8';
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  const GRAD = ['#6ee7ff','#67d5f0','#8bc0f0','#a78bfa','#c58bf0','#f472b6','#f9a8d4','#34d399','#fbbf24','#60a5fa'];
+
+  // ---- topic doughnut ----
+  new Chart(document.getElementById('topicChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Data loading & generation','EDA & cleaning','Encoding, scaling & features','Feature selection','Validation methods','Regression','Classification models','Tuning & pipelines','Clustering','Dimensionality reduction'],
+      datasets: [{
+        data: [5,4,5,3,3,2,10,3,4,1],
+        backgroundColor: GRAD, borderColor: '#0b1020', borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '58%',
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 12, padding: 9, font: { size: 11 } } },
+        title: { display: true, text: 'Example scripts by ML pipeline stage', color: '#e8ecf8', font: { size: 14, weight: '600' } }
+      }
+    }
+  });
+
+  // ---- stage bar (models breakdown) ----
+  new Chart(document.getElementById('stageChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Logistic Reg.','k-NN','Naive Bayes','SVM','Decision Tree','Random Forest','Grad. Boosting','Voting','Neural Net (MLP)'],
+      datasets: [{ label: 'Model examples', data: [1,1,1,1,2,1,1,1,1], backgroundColor: '#a78bfa', borderRadius: 6 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false }, title: { display: true, text: 'Classification & regression models covered', color: '#e8ecf8', font: { size: 14, weight: '600' } } },
+      scales: { x: { grid: { color: '#263357' }, ticks: { stepSize: 1 } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } }
+    }
+  });
+
+  // ---- live traffic infographic ----
+  const fmt = (n) => (n == null ? '—' : n.toLocaleString());
+  fetch('traffic.json?_=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error('no data'); return r.json(); })
+    .then(d => {
+      const clones = d.clones || {}, dl = d.downloads || {};
+      document.getElementById('m-clones').textContent = fmt(clones.total ?? 0);
+      document.getElementById('m-clones-u').textContent = (clones.uniques != null) ? (fmt(clones.uniques) + ' unique') : ' ';
+      document.getElementById('m-uniques').textContent = fmt(clones.uniques ?? 0);
+      document.getElementById('m-downloads').textContent = fmt(dl.releases_total ?? 0);
+      if (d.updated) document.getElementById('m-updated').textContent = 'Last updated: ' + d.updated;
+      document.getElementById('traffic-note').classList.add('hidden');
+
+      const series = Array.isArray(d.timeseries) ? d.timeseries : [];
+      if (series.length) {
+        new Chart(document.getElementById('trafficChart'), {
+          type: 'line',
+          data: {
+            labels: series.map(p => p.date),
+            datasets: [
+              { label: 'Clones', data: series.map(p => p.clones), borderColor: '#6ee7ff', backgroundColor: 'rgba(110,231,255,0.12)', fill: true, tension: 0.35, pointRadius: 2 },
+              { label: 'Unique cloners', data: series.map(p => p.uniques), borderColor: '#f472b6', backgroundColor: 'transparent', tension: 0.35, pointRadius: 2 }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' }, title: { display: true, text: 'Git clones over time', color: '#e8ecf8', font: { size: 14, weight: '600' } } },
+            scales: { x: { grid: { color: '#1c2748' }, ticks: { maxTicksLimit: 8, font: { size: 10 } } }, y: { grid: { color: '#1c2748' }, beginAtZero: true } }
+          }
+        });
+      } else {
+        document.getElementById('trafficChart').parentElement.innerHTML =
+          '<p style="color:#9aa6c8;text-align:center;padding-top:110px;">Time-series will appear once the workflow has collected a few days of data.</p>';
+      }
+    })
+    .catch(() => {
+      document.getElementById('traffic-note').textContent =
+        'Live traffic data isn’t available yet. Once the scheduled GitHub Action runs (see README), clone and download counts will appear here automatically.';
+    });
+</script>
+</body>
+</html>
