@@ -2,34 +2,7 @@
 
 This repository contains the code and data for the Machine Learning with Python course.
 
-## Course Website
-
-A landing page for the course lives in the [`docs/`](docs) folder and is designed to be published with **GitHub Pages**. Once enabled it will be available at:
-
-```
-https://wooihaw.github.io/mlpy2607/
-```
-
-### Enable GitHub Pages
-
-1. Go to **Settings > Pages**.
-2. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
-3. Choose branch **main** and folder **/docs**, then click **Save**.
-4. Wait a minute for the first build; the URL above will then serve the page.
-
-### Live clone / download infographic (optional)
-
-The page includes a "Course reach" infographic that shows how many times the repository has been cloned and downloaded. GitHub's traffic statistics are private and only cover the last 14 days, so a scheduled GitHub Action ([`.github/workflows/traffic.yml`](.github/workflows/traffic.yml)) collects them into [`docs/traffic.json`](docs/traffic.json), accumulating a running total over time. The page reads that file.
-
-To turn it on:
-
-1. Create a Personal Access Token that can read this repository's traffic:
-   - **Classic token:** `repo` scope, or
-   - **Fine-grained token:** this repository with **Administration: Read-only**.
-2. Add it as a repository secret named **`TRAFFIC_TOKEN`** (**Settings > Secrets and variables > Actions > New repository secret**).
-3. Trigger the workflow once from the **Actions** tab (**Run workflow**), then it runs daily.
-
-Notes: the default `GITHUB_TOKEN` cannot read the traffic API, which is why a PAT is required. Clone counts are exact; unique-cloner counts are an approximation (daily uniques summed over time). GitHub does not expose "Download ZIP" counts, so the download figure reflects downloads of published release assets.
+> A course landing page (in [`docs/`](docs)) can be published with GitHub Pages, including a live clone/download infographic. Setup instructions are in [Create_PAT.md](Create_PAT.md).
 
 ## Setup
 
