@@ -1,8 +1,8 @@
 {
-  "updated": "2026-08-29",
+  "updated": "2026-08-30",
   "clones": {
-    "total": 307,
-    "uniques": 199
+    "total": 326,
+    "uniques": 211
   },
   "downloads": {
     "releases_total": 0
@@ -302,6 +302,16 @@
       "date": "2026-08-27",
       "clones": 2,
       "uniques": 1
+    },
+    {
+      "date": "2026-08-28",
+      "clones": 14,
+      "uniques": 8
+    },
+    {
+      "date": "2026-08-29",
+      "clones": 5,
+      "uniques": 4
     }
   ]
 }
